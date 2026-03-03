@@ -11,56 +11,82 @@ class AddFoodScreen extends StatefulWidget {
 class _AddFoodScreenState extends State<AddFoodScreen> {
 
   final nameController = TextEditingController();
-  final imageController = TextEditingController();
+  final imageUrlController = TextEditingController();
 
-  bool isLoading = false;
+  String selectedMealType = "Breakfast";
 
-  Future<void> saveFood() async {
-    if (nameController.text.trim().isEmpty ||
-        imageController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("All fields required")),
-      );
-      return;
-    }
+  Future<void> addFood() async {
 
-    setState(() => isLoading = true);
+    if (nameController.text.isEmpty) return;
 
-    await FirebaseFirestore.instance.collection('menus').add({
-      'name': nameController.text.trim(),
-      'imageUrl': imageController.text.trim(),
-      'mealType': null,
-      'createdAt': Timestamp.now(),
+    await FirebaseFirestore.instance
+        .collection('menus')
+        .add({
+      "name": nameController.text,
+      "mealType": selectedMealType,
+      "imageUrl": imageUrlController.text,
+      "createdAt": Timestamp.now(),
     });
 
-    setState(() => isLoading = false);
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Food")),
+      appBar: AppBar(
+        title: const Text("Add Food"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: "Food Name"),
+              decoration:
+                  const InputDecoration(labelText: "Food Name"),
             ),
-            const SizedBox(height: 15),
+
+            const SizedBox(height: 12),
+
+            DropdownButtonFormField<String>(
+              value: selectedMealType,
+              decoration:
+                  const InputDecoration(labelText: "Meal Type"),
+              items: const [
+                DropdownMenuItem(
+                    value: "Breakfast",
+                    child: Text("Breakfast")),
+                DropdownMenuItem(
+                    value: "Lunch",
+                    child: Text("Lunch")),
+                DropdownMenuItem(
+                    value: "Dinner",
+                    child: Text("Dinner")),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedMealType = value!;
+                });
+              },
+            ),
+
+            const SizedBox(height: 12),
+
             TextField(
-              controller: imageController,
-              decoration: const InputDecoration(labelText: "Image URL"),
+              controller: imageUrlController,
+              decoration:
+                  const InputDecoration(labelText: "Image URL"),
             ),
-            const SizedBox(height: 25),
+
+            const SizedBox(height: 20),
+
             ElevatedButton(
-              onPressed: isLoading ? null : saveFood,
-              child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Save"),
-            )
+              onPressed: addFood,
+              child: const Text("Add Food"),
+            ),
           ],
         ),
       ),
