@@ -13,6 +13,8 @@ android/key.properties
 
 # Keystore (VERY IMPORTANT)
 android/app/*.jks
+# api keys file
+firebase_options.dart
 
 # iOS
 ios/Pods/

@@ -3,6 +3,12 @@ import '../models/food_model.dart';
 
 class FoodService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<void> deleteFood(String foodId) async {
+  await FirebaseFirestore.instance
+      .collection('foods')
+      .doc(foodId)
+      .delete();
+}
 
   Future<void> addFoodItem({
     required String name,

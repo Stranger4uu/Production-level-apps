@@ -1,87 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class StudentScreen extends StatelessWidget {
   const StudentScreen({super.key});
 
-  Widget buildSection(String title, List docs) {
-    if (docs.isEmpty) return const SizedBox();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Text(
-            title,
-            style: const TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
-        ...docs.map((data) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-            child: ListTile(
-              leading: Image.network(
-                data['imageUrl'],
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              ),
-              title: Text(data['name']),
-            ),
-          );
-        }).toList(),
-      ],
-    );
+  String normalizeMealType(String value) {
+    final lower = value.toLowerCase();
+    if (lower == "breakfast") return "Breakfast";
+    if (lower == "lunch") return "Lunch";
+    if (lower == "dinner") return "Dinner";
+    return value;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Today's Menu"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-            icon: const Icon(Icons.logout),
-          )
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('menus')
+            .collection('menus')   // MUST match Firestore exactly
             .snapshots(),
         builder: (context, snapshot) {
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
           }
 
           final docs = snapshot.data!.docs;
 
-          final breakfast = docs
-              .where((d) => d['mealType'] == 'breakfast')
-              .toList();
+          if (docs.isEmpty) {
+            return const Center(
+              child: Text("No food available"),
+            );
+          }
 
-          final lunch =
-          docs.where((d) => d['mealType'] == 'lunch').toList();
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
 
-          final dinner =
-          docs.where((d) => d['mealType'] == 'dinner').toList();
+              final data =
+                  docs[index].data() as Map<String, dynamic>;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                buildSection("Breakfast", breakfast),
-                buildSection("Lunch", lunch),
-                buildSection("Dinner", dinner),
-              ],
-            ),
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 6),
+                child: ListTile(
+                  leading: data['imageUrl'] != null
+                      ? Image.network(
+                          data['imageUrl'],
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : const Icon(Icons.fastfood),
+
+                  title: Text(data['name'] ?? ''),
+
+                  subtitle: Text(
+                    normalizeMealType(
+                      (data['mealType'] ?? "").toString(),
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
