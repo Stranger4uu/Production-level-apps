@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "465550636787",
+    "project_id": "hostelmenu-c197a",
+    "storage_bucket": "hostelmenu-c197a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465550636787:android:4762fabb29b6627b07e986",
+        "android_client_info": {
+          "package_name": "com.example.hostel_menu_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZTtzf4zjPewlBBo7nZQM1wc1F1HSjyMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

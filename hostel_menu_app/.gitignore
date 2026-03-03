@@ -1,0 +1,32 @@
+# Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android
+android/.gradle/
+android/local.properties
+android/app/build/
+android/key.properties
+
+# Keystore (VERY IMPORTANT)
+android/app/*.jks
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# macOS
+macos/Pods/
+
+# IDE
+.idea/
+.vscode/
+
+# Misc
+*.log
+*.iml
