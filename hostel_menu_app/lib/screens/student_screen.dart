@@ -29,7 +29,7 @@ class StudentScreen extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-
+          
           if (snapshot.hasError) {
             return Center(
               child: Text(snapshot.error.toString()),
