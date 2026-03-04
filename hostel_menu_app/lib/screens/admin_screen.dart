@@ -99,14 +99,16 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
               ),
               actions: [
+
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text("Cancel"),
                 ),
+
                 TextButton(
                   onPressed: () async {
 
-                    // update the food
+                    // UPDATE MENU ITEM
                     await updateMenu(docId, {
                       "name": nameController.text,
                       "mealType": selectedMealType,
@@ -114,12 +116,12 @@ class _AdminScreenState extends State<AdminScreen> {
                       "updatedAt": FieldValue.serverTimestamp(),
                     });
 
-                    // 🔔 send notification trigger
+                    // 🔔 TRIGGER NOTIFICATION
                     await FirebaseFirestore.instance
                         .collection('notifications')
                         .add({
                       "title": "Menu Updated",
-                      "body": "Today's hostel menu has been updated.",
+                      "body": "${nameController.text} updated for $selectedMealType",
                       "createdAt": FieldValue.serverTimestamp(),
                     });
 

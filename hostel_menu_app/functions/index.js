@@ -3,19 +3,14 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-exports.sendMealNotification = functions.firestore
-  .document("menus/{menuId}")
-  .onUpdate(async (change, context) => {
+exports.sendMenuNotification = functions.firestore
+  .document("notifications/{notificationId}")
+  .onCreate(async (snap, context) => {
 
-    const before = change.before.data();
-    const after = change.after.data();
+    const data = snap.data();
 
-    if (before.mealType === after.mealType) {
-      return null;
-    }
-
-    const mealType = after.mealType;
-    const foodName = after.name;
+    const title = data.title;
+    const body = data.body;
 
     const usersSnapshot = await admin.firestore()
       .collection("users")
@@ -31,24 +26,15 @@ exports.sendMealNotification = functions.firestore
     });
 
     if (tokens.length === 0) {
-      console.log("No tokens found");
       return null;
     }
 
-    const message = {
+    const payload = {
       notification: {
-        title: "Meal Updated 🍽️",
-        body: `${foodName} selected for ${mealType}`
-      },
-      tokens: tokens
+        title: title,
+        body: body,
+      }
     };
 
-    try {
-      const response = await admin.messaging().sendEachForMulticast(message);
-      console.log("Successfully sent message:", response);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-
-    return null;
+    return admin.messaging().sendToDevice(tokens, payload);
   });
