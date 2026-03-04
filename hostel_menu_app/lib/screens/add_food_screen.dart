@@ -25,7 +25,8 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       "name": nameController.text,
       "mealType": selectedMealType,
       "imageUrl": imageUrlController.text,
-      "createdAt": Timestamp.now(),
+      "createdAt": FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
     });
 
     Navigator.pop(context);
