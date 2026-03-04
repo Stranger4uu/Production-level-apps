@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 exports.sendMenuNotification = functions.firestore
-  .document("notifications/{notificationId}")
+  .document("notifications/{id}")
   .onCreate(async (snap, context) => {
 
     const data = snap.data();
@@ -20,12 +20,14 @@ exports.sendMenuNotification = functions.firestore
 
     usersSnapshot.forEach(doc => {
       const token = doc.data().fcmToken;
+
       if (token) {
         tokens.push(token);
       }
     });
 
     if (tokens.length === 0) {
+      console.log("No tokens found");
       return null;
     }
 
@@ -36,5 +38,11 @@ exports.sendMenuNotification = functions.firestore
       }
     };
 
-    return admin.messaging().sendToDevice(tokens, payload);
+    return admin.messaging().sendEachForMulticast({
+      tokens: tokens,
+      notification: {
+        title: title,
+        body: body,
+      },
+    });
   });
