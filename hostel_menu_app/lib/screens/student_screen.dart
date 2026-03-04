@@ -40,13 +40,13 @@ class StudentScreen extends StatelessWidget {
           for (var doc in docs) {
             final data = doc.data() as Map<String, dynamic>;
 
-            final Timestamp? createdAt = data['createdAt'];
+            final Timestamp? updatedAt = data['updatedAt'];
 
-            if (createdAt != null) {
-              final createdTime = createdAt.toDate();
+            if (updatedAt != null) {
+              final updatedTime = updatedAt.toDate();
               final now = DateTime.now();
 
-              if (now.difference(createdTime).inHours >= 5) {
+              if (now.difference(updatedTime).inHours >= 5) {
                 continue;
               }
             }
@@ -62,6 +62,12 @@ class StudentScreen extends StatelessWidget {
             } else if (mealType == "Dinner") {
               dinner.add(data);
             }
+          }
+
+          if (breakfast.isEmpty && lunch.isEmpty && dinner.isEmpty) {
+            return const Center(
+              child: Text("No menu available right now"),
+            );
           }
 
           Widget buildSection(String title, List items) {

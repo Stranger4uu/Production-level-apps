@@ -30,6 +30,7 @@ class _AdminScreenState extends State<AdminScreen> {
         .delete();
   }
 
+  // UPDATE MENU
   Future<void> updateMenu(String docId, Map<String, dynamic> data) async {
     await FirebaseFirestore.instance
         .collection('menus')
@@ -104,11 +105,24 @@ class _AdminScreenState extends State<AdminScreen> {
                 ),
                 TextButton(
                   onPressed: () async {
+
+                    // update the food
                     await updateMenu(docId, {
                       "name": nameController.text,
                       "mealType": selectedMealType,
                       "imageUrl": imageUrlController.text,
+                      "updatedAt": FieldValue.serverTimestamp(),
                     });
+
+                    // 🔔 send notification trigger
+                    await FirebaseFirestore.instance
+                        .collection('notifications')
+                        .add({
+                      "title": "Menu Updated",
+                      "body": "Today's hostel menu has been updated.",
+                      "createdAt": FieldValue.serverTimestamp(),
+                    });
+
                     Navigator.pop(context);
                   },
                   child: const Text("Update"),
