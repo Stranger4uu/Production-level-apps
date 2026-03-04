@@ -15,32 +15,22 @@ class StudentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Today's Menu"),
-      ),
+      appBar: AppBar(title: const Text("Today's Menu")),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('menus')
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('menus').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
+            return Center(child: Text(snapshot.error.toString()));
           }
 
           final docs = snapshot.data!.docs;
 
           if (docs.isEmpty) {
-            return const Center(
-              child: Text("No food available"),
-            );
+            return const Center(child: Text("No food available"));
           }
 
           List breakfast = [];
@@ -61,8 +51,9 @@ class StudentScreen extends StatelessWidget {
               }
             }
 
-            final mealType =
-                normalizeMealType((data['mealType'] ?? "").toString());
+            final mealType = normalizeMealType(
+              (data['mealType'] ?? "").toString(),
+            );
 
             if (mealType == "Breakfast") {
               breakfast.add(data);
@@ -104,6 +95,9 @@ class StudentScreen extends StatelessWidget {
                               width: 50,
                               height: 50,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.fastfood);
+                              },
                             )
                           : const Icon(Icons.fastfood),
                       title: Text(data['name'] ?? ''),
